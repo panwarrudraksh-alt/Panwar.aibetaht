@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Panwar.ai — Your Intelligent AI Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════
+   ROOT & RESET
+═══════════════════════════════════════════ */
+:root {
+  --bg:         #07080f;
+  --bg2:        #0d0e1a;
+  --bg3:        #12141f;
+  --bg4:        #181a27;
+  --border:     rgba(255,255,255,0.07);
+  --border2:    rgba(255,255,255,0.12);
+  --accent:     #4f6ef7;
+  --accent2:    #7b8fff;
+  --accent3:    #c084fc;
+  --glow:       rgba(79,110,247,0.18);
+  --glow2:      rgba(79,110,247,0.08);
+  --text:       #e8eaf6;
+  --text2:      #8b90b8;
+  --text3:      #4a4f72;
+  --success:    #34d399;
+  --warn:       #fbbf24;
+  --danger:     #f87171;
+  --r:          12px;
+  --r2:         18px;
+  --r3:         24px;
+  --sidebar-w:  260px;
+  --header-h:   60px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+input,textarea,select{font-family:inherit;outline:none}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+
+/* ═══════════════════════════════════════════
+   AUTH OVERLAY
+═══════════════════════════════════════════ */
+#auth-overlay{
+  position:fixed;inset:0;z-index:1000;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  animation:fadeIn .3s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.auth-card{
+  background:var(--bg2);
+  border:1px solid var(--border2);
+  border-radius:var(--r3);
+  padding:44px 40px;
+  width:100%;max-width:420px;
+  box-shadow:0 0 80px rgba(79,110,247,0.08);
+  animation:slideUp .4s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.auth-brand{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:32px;
+}
+.auth-icon{
+  width:44px;height:44px;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent3));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;
+  box-shadow:0 0 30px var(--glow);
+}
+.auth-brand-name{
+  font-family:'Syne',sans-serif;font-size:22px;font-weight:700;
+  background:linear-gradient(135deg,var(--text) 40%,var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.auth-tabs{
+  display:flex;gap:4px;
+  background:var(--bg3);border-radius:var(--r);padding:4px;
+  margin-bottom:28px;
+}
+.auth-tab{
+  flex:1;padding:8px;border-radius:9px;
+  font-size:13px;font-weight:500;color:var(--text2);
+  transition:all .2s;
+}
+.auth-tab.active{background:var(--bg4);color:var(--text);box-shadow:0 1px 6px rgba(0,0,0,.3)}
+.auth-field{margin-bottom:16px}
+.auth-label{font-size:12px;color:var(--text2);font-weight:500;margin-bottom:6px;display:block;letter-spacing:.4px}
+.auth-input{
+  width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r);padding:11px 14px;color:var(--text);font-size:14px;
+  transition:border-color .2s,box-shadow .2s;
+}
+.auth-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow2)}
+.auth-input::placeholder{color:var(--text3)}
+.auth-submit{
+  width:100%;padding:13px;margin-top:8px;
+  background:linear-gradient(135deg,var(--accent),#6a5af7);
+  color:#fff;border-radius:var(--r);font-size:15px;font-weight:600;
+  letter-spacing:.2px;
+  transition:all .2s;box-shadow:0 4px 20px var(--glow);
+}
+.auth-submit:hover{transform:translateY(-1px);box-shadow:0 8px 30px var(--glow)}
+.auth-submit:active{transform:translateY(0)}
+.auth-demo{
+  text-align:center;color:var(--text3);font-size:12px;margin-top:16px;
+  line-height:1.6;
+}
+.auth-demo span{color:var(--accent2);cursor:pointer}
+.auth-error{
+  background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);
+  border-radius:var(--r);padding:10px 14px;color:var(--danger);
+  font-size:13px;margin-bottom:14px;display:none;
+}
+
+/* ═══════════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════════ */
+#app{display:flex;height:100vh;display:none}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════ */
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  position:relative;
+}
+.sb-header{
+  padding:18px 18px 14px;
+  border-bottom:1px solid var(--border);
+}
+.sb-brand{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.sb-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent3));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;
+  box-shadow:0 0 20px var(--glow);
+  flex-shrink:0;
+}
+.sb-brand-name{
+  font-family:'Syne',sans-serif;font-size:17px;font-weight:700;
+  background:linear-gradient(135deg,var(--text) 40%,var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.sb-badge{
+  margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.8px;
+  background:var(--glow2);color:var(--accent2);
+  border:1px solid rgba(79,110,247,0.25);
+  border-radius:5px;padding:2px 7px;
+}
+.sb-badge.pro{background:rgba(192,132,252,0.1);color:var(--accent3);border-color:rgba(192,132,252,0.25)}
+.new-chat-btn{
+  width:100%;padding:9px 14px;
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:var(--r);color:var(--text);font-size:13px;font-weight:500;
+  display:flex;align-items:center;gap:8px;
+  transition:all .2s;
+}
+.new-chat-btn:hover{background:var(--bg4);border-color:var(--accent);color:var(--accent2)}
+.new-chat-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;flex-shrink:0}
+
+/* Sidebar nav */
+.sb-nav{padding:10px 10px;display:flex;flex-direction:column;gap:2px}
+.sb-nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;border-radius:var(--r);
+  color:var(--text2);font-size:13px;font-weight:500;
+  transition:all .15s;cursor:pointer;
+}
+.sb-nav-item:hover{background:var(--bg3);color:var(--text)}
+.sb-nav-item.active{background:var(--glow2);color:var(--accent2);border:1px solid rgba(79,110,247,0.15)}
+.sb-nav-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+
+/* Recent chats */
+.sb-section{padding:0 10px}
+.sb-section-label{
+  font-size:10px;font-weight:600;letter-spacing:1.2px;
+  color:var(--text3);text-transform:uppercase;
+  padding:8px 8px 6px;
+}
+.history-item{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;border-radius:9px;
+  color:var(--text2);font-size:12.5px;cursor:pointer;
+  transition:all .15s;white-space:nowrap;overflow:hidden;
+}
+.history-item:hover{background:var(--bg3);color:var(--text)}
+.history-dot{width:5px;height:5px;border-radius:50%;background:var(--text3);flex-shrink:0}
+.history-text{overflow:hidden;text-overflow:ellipsis;flex:1}
+
+/* Sidebar footer */
+.sb-footer{margin-top:auto;padding:12px 14px;border-top:1px solid var(--border)}
+.plan-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r);padding:12px 14px;margin-bottom:10px;
+}
+.plan-card.pro-card{
+  background:linear-gradient(135deg,rgba(79,110,247,0.08),rgba(192,132,252,0.05));
+  border-color:rgba(79,110,247,0.2);
+}
+.plan-name{font-size:11px;font-weight:600;letter-spacing:.5px;color:var(--text2);text-transform:uppercase}
+.plan-detail{font-size:11px;color:var(--text3);margin-top:3px}
+.progress-wrap{height:3px;background:var(--bg4);border-radius:2px;margin-top:9px;overflow:hidden}
+.progress-bar{
+  height:100%;border-radius:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent3));
+  transition:width .4s ease;
+}
+.upgrade-btn{
+  width:100%;padding:10px;
+  background:linear-gradient(135deg,var(--accent),#7a5af8);
+  color:#fff;border-radius:var(--r);font-size:13px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  box-shadow:0 4px 16px var(--glow);
+  transition:all .2s;margin-bottom:10px;
+}
+.upgrade-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px var(--glow)}
+.user-card{
+  display:flex;align-items:center;gap:10px;
+  padding:10px;background:var(--bg3);border-radius:var(--r);
+  border:1px solid var(--border);
+}
+.user-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent3));
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.user-info{flex:1;min-width:0}
+.user-name{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-email{font-size:11px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logout-btn{
+  width:26px;height:26px;border-radius:7px;
+  background:var(--bg4);color:var(--text3);font-size:13px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0;
+}
+.logout-btn:hover{background:rgba(248,113,113,0.1);color:var(--danger)}
+
+/* ═══════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════ */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* Header */
+.main-header{
+  height:var(--header-h);flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  border-bottom:1px solid var(--border);
+  background:rgba(7,8,15,0.7);backdrop-filter:blur(12px);
+}
+.header-title{
+  font-family:'Syne',sans-serif;font-size:15px;font-weight:600;
+  color:var(--text2);
+}
+.header-title span{color:var(--text)}
+.header-right{display:flex;align-items:center;gap:10px}
+.status-dot{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--success);
+  background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);
+  border-radius:20px;padding:4px 10px;
+}
+.status-dot::before{
+  content:'';width:6px;height:6px;border-radius:50%;background:var(--success);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.deep-think-toggle{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 12px;border-radius:20px;
+  border:1px solid var(--border);
+  font-size:12px;color:var(--text2);
+  transition:all .2s;background:var(--bg2);cursor:pointer;
+}
+.deep-think-toggle.on{
+  background:rgba(192,132,252,0.08);border-color:rgba(192,132,252,0.3);color:var(--accent3);
+}
+.toggle-dot{
+  width:14px;height:14px;border-radius:50%;
+  background:var(--bg4);border:2px solid var(--border2);
+  transition:all .2s;
+}
+.deep-think-toggle.on .toggle-dot{background:var(--accent3);border-color:transparent;box-shadow:0 0 8px rgba(192,132,252,.5)}
+
+/* Tab panels */
+.tab-panel{flex:1;overflow:hidden;display:none;flex-direction:column}
+.tab-panel.active{display:flex}
+
+/* ═══════════════════════════════════════════
+   CHAT TAB
+═══════════════════════════════════════════ */
+.chat-messages{
+  flex:1;overflow-y:auto;
+  padding:28px max(28px, calc(50% - 400px));
+  display:flex;flex-direction:column;gap:20px;
+}
+
+/* Empty state */
+.empty-state{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:40px 20px;
+  gap:16px;
+}
+.empty-icon{
+  width:70px;height:70px;border-radius:20px;
+  background:linear-gradient(135deg,var(--accent),var(--accent3));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:#fff;
+  box-shadow:0 0 50px var(--glow);
+  margin-bottom:8px;
+}
+.empty-title{
+  font-family:'Syne',sans-serif;font-size:28px;font-weight:700;
+  background:linear-gradient(135deg,var(--text) 40%,var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:-.5px;
+}
+.empty-sub{font-size:14.5px;color:var(--text2);max-width:400px;line-height:1.65}
+.suggestion-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+  width:100%;max-width:600px;margin-top:12px;
+}
+.suggestion-chip{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r);padding:12px 14px;
+  text-align:left;font-size:12.5px;color:var(--text2);
+  transition:all .2s;cursor:pointer;
+}
+.suggestion-chip:hover{border-color:var(--accent);color:var(--text);background:var(--glow2);transform:translateY(-2px)}
+.chip-em{display:block;font-size:18px;margin-bottom:5px}
+
+/* Messages */
+.msg-row{display:flex;gap:12px;align-items:flex-start;animation:msgIn .25s ease forwards}
+@keyframes msgIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.msg-row.user{flex-direction:row-reverse}
+.msg-av{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;
+}
+.msg-av.ai{
+  background:linear-gradient(135deg,var(--accent),var(--accent3));color:#fff;
+  box-shadow:0 0 16px var(--glow);font-family:'Syne',sans-serif;font-size:15px;
+}
+.msg-av.user{background:var(--bg3);border:1px solid var(--border2);color:var(--text2)}
+.msg-body{max-width:78%;display:flex;flex-direction:column;gap:4px}
+.msg-bubble{
+  padding:13px 16px;font-size:14px;line-height:1.65;
+  white-space:pre-wrap;word-break:break-word;
+}
+.msg-bubble.ai{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:4px var(--r2) var(--r2) var(--r2);color:var(--text);
+}
+.msg-bubble.user{
+  background:linear-gradient(135deg,rgba(79,110,247,0.15),rgba(106,90,247,0.1));
+  border:1px solid rgba(79,110,247,0.2);
+  border-radius:var(--r2) 4px var(--r2) var(--r2);color:var(--text);
+}
+.msg-meta{font-size:11px;color:var(--text3);padding:0 4px}
+.msg-row.user .msg-meta{text-align:right}
+
+/* Typing */
+.typing-row{display:flex;gap:12px;align-items:flex-start;animation:msgIn .25s ease}
+.typing-bubble{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:4px var(--r2) var(--r2) var(--r2);
+  padding:14px 18px;display:flex;gap:5px;align-items:center;
+}
+.t-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--accent);
+  animation:tPulse 1.2s infinite;
+}
+.t-dot:nth-child(2){animation-delay:.2s}
+.t-dot:nth-child(3){animation-delay:.4s}
+@keyframes tPulse{
+  0%,80%,100%{opacity:.3;transform:scale(.8)}
+  40%{opacity:1;transform:scale(1.15)}
+}
+
+/* Warning */
+.chat-warning{
+  margin:0 max(28px,calc(50% - 400px));
+  background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);
+  border-radius:var(--r);padding:10px 14px;
+  color:var(--warn);font-size:13px;text-align:center;
+}
+.chat-limit-wall{
+  background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.25);
+  border-radius:var(--r);padding:10px 14px;
+  color:var(--danger);font-size:13px;text-align:center;
+}
+
+/* Input */
+.chat-input-area{
+  padding:14px max(24px,calc(50% - 400px)) 18px;
+  border-top:1px solid var(--border);
+  background:rgba(7,8,15,0.7);backdrop-filter:blur(12px);
+}
+.input-row-wrap{
+  display:flex;align-items:flex-end;gap:8px;
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:var(--r2);padding:10px 12px;
+  transition:border-color .2s,box-shadow .2s;
+}
+.input-row-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow2)}
+.chat-textarea{
+  flex:1;background:transparent;border:none;resize:none;
+  color:var(--text);font-size:14px;line-height:1.5;
+  max-height:140px;overflow-y:auto;
+}
+.chat-textarea::placeholder{color:var(--text3)}
+.input-actions{display:flex;gap:6px;align-items:flex-end;flex-shrink:0}
+.input-action-btn{
+  width:32px;height:32px;border-radius:9px;
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text2);font-size:14px;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.input-action-btn:hover{border-color:var(--border2);color:var(--text)}
+.send-btn{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),#7a5af8);
+  color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px var(--glow);
+  transition:all .2s;
+}
+.send-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px var(--glow)}
+.send-btn:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
+.prompt-tags{
+  display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;
+}
+.ptag{
+  padding:5px 12px;border-radius:20px;
+  background:var(--bg3);border:1px solid var(--border);
+  font-size:12px;color:var(--text2);cursor:pointer;
+  transition:all .15s;
+}
+.ptag:hover{border-color:var(--accent);color:var(--accent2);background:var(--glow2)}
+.input-hint{font-size:11.5px;color:var(--text3);text-align:center;margin-top:10px}
+
+/* ═══════════════════════════════════════════
+   FEATURES TAB
+═══════════════════════════════════════════ */
+.tab-scroll{flex:1;overflow-y:auto;padding:28px}
+.tab-heading{
+  font-family:'Syne',sans-serif;font-size:22px;font-weight:700;
+  margin-bottom:6px;
+}
+.tab-sub{font-size:14px;color:var(--text2);margin-bottom:28px}
+.features-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;
+}
+.feature-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r2);padding:20px;cursor:pointer;
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.feature-card::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--glow2),transparent);
+  opacity:0;transition:opacity .2s;border-radius:inherit;
+}
+.feature-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.3)}
+.feature-card:hover::after{opacity:1}
+.fc-icon{font-size:26px;margin-bottom:12px}
+.fc-title{font-size:14.5px;font-weight:600;margin-bottom:6px;font-family:'Syne',sans-serif}
+.fc-desc{font-size:12.5px;color:var(--text2);line-height:1.55}
+.fc-badge{
+  display:inline-block;margin-top:10px;
+  font-size:10px;font-weight:600;letter-spacing:.5px;
+  padding:2px 8px;border-radius:4px;text-transform:uppercase;
+}
+.fc-badge.pop{background:rgba(79,110,247,0.12);color:var(--accent2);border:1px solid rgba(79,110,247,0.2)}
+.fc-badge.new{background:rgba(52,211,153,0.1);color:var(--success);border:1px solid rgba(52,211,153,0.2)}
+.fc-badge.beta{background:rgba(251,191,36,0.1);color:var(--warn);border:1px solid rgba(251,191,36,0.2)}
+
+/* ═══════════════════════════════════════════
+   ANALYTICS TAB
+═══════════════════════════════════════════ */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;
+  margin-bottom:24px;
+}
+.stat-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r2);padding:18px 20px;
+}
+.stat-num{
+  font-family:'Syne',sans-serif;font-size:28px;font-weight:700;
+  background:linear-gradient(135deg,var(--text),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.stat-label{font-size:12px;color:var(--text2);margin-top:4px}
+.stat-delta{font-size:11px;color:var(--success);margin-top:6px}
+.analytics-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.a-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r2);padding:20px;
+}
+.a-card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;margin-bottom:16px;color:var(--text2)}
+.bar-chart{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:flex;align-items:center;gap:10px;font-size:12px}
+.bar-label{width:90px;color:var(--text2);flex-shrink:0}
+.bar-wrap{flex:1;height:8px;background:var(--bg4);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent3));transition:width 1s ease}
+.bar-val{width:34px;text-align:right;color:var(--text2)}
+.activity-bars{display:flex;align-items:flex-end;gap:8px;height:80px;margin-top:8px}
+.a-bar{
+  flex:1;border-radius:4px 4px 0 0;
+  background:linear-gradient(180deg,var(--accent),rgba(79,110,247,0.3));
+  transition:height 1s ease;min-height:4px;
+}
+.a-bar-label{font-size:10px;color:var(--text3);text-align:center;margin-top:5px}
+.rating-stars{font-size:20px;color:var(--warn);letter-spacing:2px;margin-bottom:6px}
+.rating-num{font-family:'Syne',sans-serif;font-size:32px;font-weight:700;color:var(--text)}
+.rating-sub{font-size:12px;color:var(--text2);margin-top:4px}
+
+/* ═══════════════════════════════════════════
+   SETTINGS TAB
+═══════════════════════════════════════════ */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.setting-section{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r2);padding:20px;
+}
+.setting-section.full{grid-column:1/-1}
+.ss-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;margin-bottom:16px}
+.ss-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid var(--border);
+}
+.ss-row:last-child{border-bottom:none;padding-bottom:0}
+.ss-label{font-size:13px;color:var(--text2)}
+.ss-val{font-size:12px;color:var(--text3)}
+.toggle-switch{
+  width:36px;height:20px;border-radius:10px;
+  background:var(--bg4);border:1px solid var(--border2);
+  position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;
+}
+.toggle-switch.on{background:var(--accent);border-color:transparent}
+.toggle-knob{
+  position:absolute;top:2px;left:2px;
+  width:14px;height:14px;border-radius:50%;
+  background:#fff;transition:transform .2s;
+  box-shadow:0 1px 4px rgba(0,0,0,.3);
+}
+.toggle-switch.on .toggle-knob{transform:translateX(16px)}
+.select-field{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:6px 10px;color:var(--text);font-size:12.5px;
+  cursor:pointer;
+}
+.range-wrap{display:flex;align-items:center;gap:10px;flex:1;margin-left:12px}
+.range-input{
+  flex:1;-webkit-appearance:none;height:4px;border-radius:2px;
+  background:var(--bg4);outline:none;cursor:pointer;
+}
+.range-input::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+  background:var(--accent);cursor:pointer;box-shadow:0 0 6px var(--glow);
+}
+.range-val{font-size:12px;color:var(--text2);width:32px;text-align:right}
+.model-cards{display:flex;flex-direction:column;gap:8px}
+.model-card{
+  padding:12px 14px;border-radius:var(--r);border:1px solid var(--border);
+  cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s;
+}
+.model-card:hover{border-color:var(--border2)}
+.model-card.selected{background:var(--glow2);border-color:rgba(79,110,247,.3)}
+.model-radio{
+  width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;
+}
+.model-card.selected .model-radio{border-color:var(--accent);background:var(--accent)}
+.model-radio-inner{width:5px;height:5px;border-radius:50%;background:#fff;display:none}
+.model-card.selected .model-radio-inner{display:block}
+.model-name{font-size:13px;font-weight:500}
+.model-tag{margin-left:auto;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px}
+.model-tag.fast{background:rgba(52,211,153,.1);color:var(--success);border:1px solid rgba(52,211,153,.2)}
+.model-tag.smart{background:rgba(79,110,247,.1);color:var(--accent2);border:1px solid rgba(79,110,247,.2)}
+.model-tag.code{background:rgba(192,132,252,.1);color:var(--accent3);border:1px solid rgba(192,132,252,.2)}
+.setting-btn{
+  padding:9px 16px;border-radius:var(--r);font-size:13px;font-weight:500;
+  border:1px solid var(--border);color:var(--text2);background:var(--bg3);
+  transition:all .15s;
+}
+.setting-btn:hover{border-color:var(--border2);color:var(--text)}
+.setting-btn.danger{border-color:rgba(248,113,113,.2);color:var(--danger);background:rgba(248,113,113,.05)}
+.setting-btn.danger:hover{background:rgba(248,113,113,.1)}
+.model-info-card{
+  background:linear-gradient(135deg,var(--glow2),rgba(192,132,252,0.05));
+  border:1px solid rgba(79,110,247,.2);border-radius:var(--r2);padding:20px;
+}
+.mic-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.mic-dot{width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse 2s infinite}
+.mic-label{font-size:12px;color:var(--text2)}
+.mic-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:700}
+.cap-bars{margin-top:12px;display:flex;flex-direction:column;gap:7px}
+.cap-row{display:flex;align-items:center;gap:8px;font-size:12px}
+.cap-name{width:80px;color:var(--text2)}
+.cap-wrap{flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.cap-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent3))}
+.cap-pct{width:30px;text-align:right;color:var(--accent2)}
+
+/* ═══════════════════════════════════════════
+   TOASTS
+═══════════════════════════════════════════ */
+#toast-area{
+  position:fixed;bottom:24px;right:24px;z-index:999;
+  display:flex;flex-direction:column;gap:8px;
+}
+.toast{
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:var(--r);padding:12px 16px;
+  font-size:13px;color:var(--text);min-width:220px;
+  animation:toastIn .3s ease;box-shadow:0 8px 24px rgba(0,0,0,.4);
+}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.toast.success{border-color:rgba(52,211,153,.3);color:var(--success)}
+.toast.error{border-color:rgba(248,113,113,.3);color:var(--danger)}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ AUTH ═══════════ -->
+<div id="auth-overlay">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="auth-icon">✦</div>
+      <div class="auth-brand-name">Panwar.ai</div>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login',this)">Sign In</button>
+      <button class="auth-tab" onclick="switchAuthTab('signup',this)">Create Account</button>
+    </div>
+    <div id="auth-error" class="auth-error"></div>
+
+    <!-- Login -->
+    <div id="tab-login">
+      <div class="auth-field">
+        <label class="auth-label">Email Address</label>
+        <input class="auth-input" id="login-email" type="email" placeholder="you@example.com"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Password</label>
+        <input class="auth-input" id="login-pass" type="password" placeholder="••••••••"
+               onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <button class="auth-submit" onclick="doLogin()">Sign In →</button>
+      <div class="auth-demo">
+        Demo: <span onclick="quickDemo()">demo@panwar.ai / demo123</span>
+      </div>
+    </div>
+
+    <!-- Sign up -->
+    <div id="tab-signup" style="display:none">
+      <div class="auth-field">
+        <label class="auth-label">Full Name</label>
+        <input class="auth-input" id="su-name" type="text" placeholder="Alex Panwar"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Email Address</label>
+        <input class="auth-input" id="su-email" type="email" placeholder="you@example.com"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Password</label>
+        <input class="auth-input" id="su-pass" type="password" placeholder="Min. 6 characters"
+               onkeydown="if(event.key==='Enter')doSignup()"/>
+      </div>
+      <button class="auth-submit" onclick="doSignup()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ APP ═══════════ -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-header">
+      <div class="sb-brand">
+        <div class="sb-icon">✦</div>
+        <div class="sb-brand-name">Panwar.ai</div>
+        <div class="sb-badge" id="sb-plan-badge">BETA</div>
+      </div>
+      <button class="new-chat-btn" onclick="newChat()">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        New Conversation
+      </button>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-nav-item active" onclick="switchTab('chat',this)" data-tab="chat">
+        <span class="sb-nav-icon">💬</span> Chat
+      </div>
+      <div class="sb-nav-item" onclick="switchTab('features',this)" data-tab="features">
+        <span class="sb-nav-icon">⚡</span> Features
+      </div>
+      <div class="sb-nav-item" onclick="switchTab('analytics',this)" data-tab="analytics">
+        <span class="sb-nav-icon">📊</span> Analytics
+      </div>
+      <div class="sb-nav-item" onclick="switchTab('settings',this)" data-tab="settings">
+        <span class="sb-nav-icon">⚙️</span> Settings
+      </div>
+    </nav>
+
+    <div class="sb-section">
+      <div class="sb-section-label">Recent</div>
+      <div id="history-list"></div>
+    </div>
+
+    <div class="sb-footer">
+      <div class="plan-card" id="plan-card">
+        <div class="plan-name">Free Plan</div>
+        <div class="plan-detail" id="plan-detail">0 / 10 messages used</div>
+        <div class="progress-wrap"><div class="progress-bar" id="plan-progress" style="width:0%"></div></div>
+      </div>
+      <button class="upgrade-btn" id="upgrade-btn" onclick="upgradePro()">⚡ Upgrade to Pro</button>
+      <div class="user-card">
+        <div class="user-avatar" id="user-av">U</div>
+        <div class="user-info">
+          <div class="user-name" id="user-name-el">User</div>
+          <div class="user-email" id="user-email-el">user@example.com</div>
+        </div>
+        <button class="logout-btn" onclick="doLogout()" title="Sign out">↩</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- Header -->
+    <header class="main-header">
+      <div class="header-title" id="header-title"><span>New Conversation</span></div>
+      <div class="header-right">
+        <div class="deep-think-toggle" id="deep-toggle" onclick="toggleDeepThink()">
+          <div class="toggle-dot"></div>
+          🧠 Deep Think
+        </div>
+        <div class="status-dot">Online</div>
+      </div>
+    </header>
+
+    <!-- CHAT TAB -->
+    <div class="tab-panel active" id="tab-chat">
+      <div class="chat-messages" id="chat-messages">
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">✦</div>
+          <div class="empty-title" id="empty-title">Hello!</div>
+          <div class="empty-sub">Panwar.ai is ready. Ask me anything — write code, explain concepts, generate ideas, and more.</div>
+          <div class="suggestion-grid">
+            <div class="suggestion-chip" onclick="usePrompt('Explain neural networks simply')">
+              <span class="chip-em">🧠</span>Neural Networks
+            </div>
+            <div class="suggestion-chip" onclick="usePrompt('Write a Python web scraper')">
+              <span class="chip-em">🐍</span>Python Code
+            </div>
+            <div class="suggestion-chip" onclick="usePrompt('Give me 5 unique startup ideas for 2025')">
+              <span class="chip-em">💡</span>Startup Ideas
+            </div>
+            <div class="suggestion-chip" onclick="usePrompt('How does GPT actually work?')">
+              <span class="chip-em">🤖</span>How GPT Works
+            </div>
+            <div class="suggestion-chip" onclick="usePrompt('Write a professional cold email')">
+              <span class="chip-em">📧</span>Cold Email
+            </div>
+            <div class="suggestion-chip" onclick="usePrompt('Explain machine learning workflow')">
+              <span class="chip-em">⚙️</span>ML Workflow
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Warning area -->
+      <div id="chat-warning-area" style="padding:0 max(24px,calc(50% - 400px));margin-bottom:8px"></div>
+
+      <!-- Input -->
+      <div class="chat-input-area">
+        <div class="prompt-tags">
+          <span class="ptag" onclick="usePrompt('Write code for ')">💻 Code</span>
+          <span class="ptag" onclick="usePrompt('Explain ')">📚 Explain</span>
+          <span class="ptag" onclick="usePrompt('Brainstorm ideas for ')">💡 Brainstorm</span>
+          <span class="ptag" onclick="usePrompt('Analyze ')">📊 Analyze</span>
+          <span class="ptag" onclick="usePrompt('Write a ')">✍️ Write</span>
+        </div>
+        <div class="input-row-wrap">
+          <textarea class="chat-textarea" id="chat-input" rows="1"
+            placeholder="Message Panwar.ai..."
+            onkeydown="handleKey(event)"
+            oninput="autoResize(this)"></textarea>
+          <div class="input-actions">
+            <button class="input-action-btn" title="Attach" onclick="toast('File upload coming in full version!','success')">📎</button>
+            <button class="input-action-btn" title="Voice" onclick="toast('Voice input coming soon!','success')">🎤</button>
+            <button class="send-btn" id="send-btn" onclick="sendMessage()" title="Send">➤</button>
+          </div>
+        </div>
+        <div class="input-hint" id="input-hint">
+          Press Enter to send · Shift+Enter for new line · Prototype — AI responses simulated
+        </div>
+      </div>
+    </div>
+
+    <!-- FEATURES TAB -->
+    <div class="tab-panel" id="tab-features">
+      <div class="tab-scroll">
+        <div class="tab-heading">✦ AI Features</div>
+        <div class="tab-sub">Explore all capabilities of Panwar.ai — click any feature to try it in chat</div>
+        <div class="features-grid">
+          <div class="feature-card" onclick="tryFeature('Write a Python function that ')">
+            <div class="fc-icon">💻</div>
+            <div class="fc-title">Code Generation</div>
+            <div class="fc-desc">Generate code in any language — Python, JavaScript, SQL, TypeScript, and 50+ more.</div>
+            <div class="fc-badge pop">Popular</div>
+          </div>
+          <div class="feature-card" onclick="tryFeature('Explain this concept clearly: ')">
+            <div class="fc-icon">📚</div>
+            <div class="fc-title">Smart Explanation</div>
+            <div class="fc-desc">Complex topics broken down clearly at any level — beginner to expert.</div>
+            <div class="fc-badge pop">Popular</div>
+          </div>
+          <div class="feature-card" onclick="tryFeature('Brainstorm creative ideas for ')">
+            <div class="fc-icon">💡</div>
+            <div class="fc-title">Idea Generator</div>
+            <div class="fc-desc">Brainstorm creative ideas for products, businesses, content, and more.</div>
+          </div>
+          <div class="feature-card" onclick="tryFeature('Write professional content: ')">
+            <div class="fc-icon">✍️</div>
+            <div class="fc-title">Content Writing</div>
+            <div class="fc-desc">Emails, blogs, reports, stories — professional content in seconds.</div>
+            <div class="fc-badge pop">Popular</div>
+          </div>
+          <div class="feature-card" onclick="tryFeature('Analyze this in depth: ')">
+            <div class="fc-icon">🔍</div>
+            <div class="fc-title">Deep Analysis</div>
+            <div class="fc-desc">Thorough analysis of topics, data, arguments, and complex decisions.</div>
+          </div>
+          <div class="feature-card" onclick="tryFeature('Translate to Spanish: ')">
+            <div class="fc-icon">🌍</div>
+            <div class="fc-title">Translation</div>
+            <div class="fc-desc">Translate text into 100+ languages with cultural context awareness.</div>
+            <div class="fc-badge new">New</div>
+          </div>
+          <div class="feature-card" onclick="tryFeature('Design a complete AI project plan for ')">
+            <div class="fc-icon">🤖</div>
+            <div class="fc-title">AI Project Planning</div>
+            <div class="fc-desc">Design complete AI/ML project blueprints, architectures, and workflows.</div>
+            <div class="fc-badge new">New</div>
+          </div>
+          <div class="feature-card" onclick="tryFeature('Debug this code and explain the issue: ')">
+            <div class="fc-icon">🐛</div>
+            <div class="fc-title">Code Debugger</div>
+            <div class="fc-desc">Find bugs, explain issues, and suggest fixes for your code instantly.</div>
+            <div class="fc-badge beta">Beta</div>
+          </div>
+          <div class="feature-card" onclick="tryFeature('Create a structured plan and roadmap for ')">
+            <div class="fc-icon">📋</div>
+            <div class="fc-title">Planning & Roadmaps</div>
+            <div class="fc-desc">Build structured plans, schedules, and roadmaps for any goal or project.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS TAB -->
+    <div class="tab-panel" id="tab-analytics">
+      <div class="tab-scroll">
+        <div class="tab-heading">📊 Usage Analytics</div>
+        <div class="tab-sub">Your Panwar.ai usage at a glance</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-num" id="stat-msgs">0</div>
+            <div class="stat-label">Total Messages</div>
+            <div class="stat-delta">↑ Active this session</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">94.6%</div>
+            <div class="stat-label">Satisfaction Rate</div>
+            <div class="stat-delta">↑ 2.1% vs last month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">0.8s</div>
+            <div class="stat-label">Avg Response Time</div>
+            <div class="stat-delta">↑ Faster by 0.3s</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="stat-chats">0</div>
+            <div class="stat-label">Conversations</div>
+            <div class="stat-delta">↑ Growing</div>
+          </div>
+        </div>
+        <div class="analytics-row">
+          <div class="a-card">
+            <div class="a-card-title">📅 Daily Activity (This Week)</div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;gap:8px;align-items:flex-end;height:90px" id="activity-bars"></div>
+              <div style="display:flex;gap:8px;margin-top:6px" id="activity-labels"></div>
+            </div>
+          </div>
+          <div class="a-card">
+            <div class="a-card-title">🏆 Top Use Cases</div>
+            <div class="bar-chart">
+              <div class="bar-row">
+                <div class="bar-label">Code Gen</div>
+                <div class="bar-wrap"><div class="bar-fill" style="width:0%" data-w="38%"></div></div>
+                <div class="bar-val">38%</div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-label">Writing</div>
+                <div class="bar-wrap"><div class="bar-fill" style="width:0%" data-w="25%"></div></div>
+                <div class="bar-val">25%</div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-label">Explanation</div>
+                <div class="bar-wrap"><div class="bar-fill" style="width:0%" data-w="20%"></div></div>
+                <div class="bar-val">20%</div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-label">Analysis</div>
+                <div class="bar-wrap"><div class="bar-fill" style="width:0%" data-w="17%"></div></div>
+                <div class="bar-val">17%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="analytics-row">
+          <div class="a-card">
+            <div class="a-card-title">⭐ User Rating</div>
+            <div class="rating-stars">★★★★★</div>
+            <div class="rating-num">4.8</div>
+            <div class="rating-sub">Based on 512 prototype reviews</div>
+          </div>
+          <div class="a-card">
+            <div class="a-card-title">📈 Session Stats</div>
+            <div class="bar-chart">
+              <div class="bar-row">
+                <div class="bar-label">Messages</div>
+                <div class="bar-wrap"><div class="bar-fill" id="sess-bar" style="width:0%"></div></div>
+                <div class="bar-val" id="sess-val">0</div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-label">Plan Usage</div>
+                <div class="bar-wrap"><div class="bar-fill" id="plan-bar" style="width:0%"></div></div>
+                <div class="bar-val" id="plan-val">0%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div class="tab-panel" id="tab-settings">
+      <div class="tab-scroll">
+        <div class="tab-heading">⚙️ Settings</div>
+        <div class="tab-sub">Customize your Panwar.ai experience</div>
+        <div class="settings-grid">
+          <!-- Model -->
+          <div class="setting-section">
+            <div class="ss-title">🤖 AI Model</div>
+            <div class="model-cards">
+              <div class="model-card selected" onclick="selectModel(this)">
+                <div class="model-radio"><div class="model-radio-inner"></div></div>
+                <div class="model-name">Panwar Ultra 4.0</div>
+                <div class="model-tag smart">Smart</div>
+              </div>
+              <div class="model-card" onclick="selectModel(this)">
+                <div class="model-radio"><div class="model-radio-inner"></div></div>
+                <div class="model-name">Panwar Pro 3.5</div>
+                <div class="model-tag smart">Balanced</div>
+              </div>
+              <div class="model-card" onclick="selectModel(this)">
+                <div class="model-radio"><div class="model-radio-inner"></div></div>
+                <div class="model-name">Panwar Lite</div>
+                <div class="model-tag fast">Fast</div>
+              </div>
+              <div class="model-card" onclick="selectModel(this)">
+                <div class="model-radio"><div class="model-radio-inner"></div></div>
+                <div class="model-name">Panwar Code</div>
+                <div class="model-tag code">Code</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Model Info -->
+          <div class="setting-section">
+            <div class="ss-title">📡 Active Model Info</div>
+            <div class="model-info-card">
+              <div class="mic-row">
+                <div class="mic-dot"></div>
+                <div class="mic-label">Currently active</div>
+              </div>
+              <div class="mic-name" id="active-model-name">Panwar Ultra 4.0</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:6px">Context: 128K tokens · ~0.8s avg</div>
+              <div class="cap-bars">
+                <div class="cap-row"><div class="cap-name">Coding</div><div class="cap-wrap"><div class="cap-fill" style="width:96%"></div></div><div class="cap-pct">96%</div></div>
+                <div class="cap-row"><div class="cap-name">Writing</div><div class="cap-wrap"><div class="cap-fill" style="width:94%"></div></div><div class="cap-pct">94%</div></div>
+                <div class="cap-row"><div class="cap-name">Reasoning</div><div class="cap-wrap"><div class="cap-fill" style="width:92%"></div></div><div class="cap-pct">92%</div></div>
+                <div class="cap-row"><div class="cap-name">Languages</div><div class="cap-wrap"><div class="cap-fill" style="width:98%"></div></div><div class="cap-pct">98%</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Response -->
+          <div class="setting-section">
+            <div class="ss-title">🎛️ Response Settings</div>
+            <div class="ss-row">
+              <div>
+                <div class="ss-label">🌡️ Temperature</div>
+                <div class="ss-val">Controls creativity</div>
+              </div>
+              <div class="range-wrap">
+                <input type="range" class="range-input" min="0" max="100" value="70" oninput="document.getElementById('temp-val').textContent=this.value+'%'"/>
+                <div class="range-val" id="temp-val">70%</div>
+              </div>
+            </div>
+            <div class="ss-row">
+              <div>
+                <div class="ss-label">📏 Max Length</div>
+                <div class="ss-val">Response size</div>
+              </div>
+              <select class="select-field" style="flex-shrink:0">
+                <option>2048 tokens</option>
+                <option>512 tokens</option>
+                <option>4096 tokens</option>
+                <option>8192 tokens</option>
+              </select>
+            </div>
+            <div class="ss-row">
+              <div>
+                <div class="ss-label">💬 Stream Responses</div>
+                <div class="ss-val">Word by word</div>
+              </div>
+              <div class="toggle-switch on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+            </div>
+          </div>
+
+          <!-- Preferences -->
+          <div class="setting-section">
+            <div class="ss-title">🎨 Preferences</div>
+            <div class="ss-row">
+              <div><div class="ss-label">🌙 Dark Mode</div></div>
+              <div class="toggle-switch on"><div class="toggle-knob"></div></div>
+            </div>
+            <div class="ss-row">
+              <div><div class="ss-label">🔔 Notifications</div></div>
+              <div class="toggle-switch" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+            </div>
+            <div class="ss-row">
+              <div><div class="ss-label">📝 Save History</div></div>
+              <div class="toggle-switch on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+            </div>
+            <div class="ss-row">
+              <div><div class="ss-label">🔒 Privacy Mode</div></div>
+              <div class="toggle-switch" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+            </div>
+          </div>
+
+          <!-- Data -->
+          <div class="setting-section full">
+            <div class="ss-title">🗄️ Data Management</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="setting-btn danger" onclick="clearHistory()">🗑️ Clear All History</button>
+              <button class="setting-btn" onclick="exportChat()">📤 Export Conversations</button>
+              <button class="setting-btn" onclick="toast('Account settings coming in full version!','success')">👤 Account Settings</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="toast-area"></div>
+
+<script>
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+const FREE_LIMIT = 10;
+const USERS_DB = { 'demo@panwar.ai': { name:'Demo User', pass:'demo123', plan:'free' } };
+
+let state = {
+  user: null,
+  plan: 'free',
+  messages: [],
+  chatHistory: [],
+  msgCount: 0,
+  deepThink: false,
+  selectedModel: 'Panwar Ultra 4.0',
+};
+
+const AI_RESPONSES = [
+  `This is a prototype version of Panwar.ai ✦\n\nAI responses will be fully available once the API integration is complete. Your message — "{msg}" — was received successfully.\n\n— Panwar.ai Prototype`,
+  `Thanks for your message! Panwar.ai is currently running in prototype mode.\n\nYou asked: "{msg}"\n\nThe complete AI engine is being integrated. This confirms the chat system is working perfectly end-to-end.`,
+  `Prototype mode active ✦\n\n"{msg}"\n\nYour query has been processed by the Panwar.ai prototype system. Full intelligent responses — with real-time reasoning, code execution, and multi-modal capabilities — will be available at launch.`,
+  `I received your message: "{msg}"\n\nPanwar.ai is in prototype stage. The chat infrastructure, authentication, history, and plan systems are all fully operational. The AI response engine will be connected soon.\n\n*[Simulated response]*`,
+];
+
+const DEEP_RESPONSES = [
+  `🧠 Deep Thinking Mode engaged...\n\nStep 1: Parsing → "{msg}"\nStep 2: Cross-referencing knowledge base\nStep 3: Generating multi-step reasoning\nStep 4: Validating response\n\n✦ Analysis complete (prototype):\n\nThis is a simulated deep reasoning response. The full chain-of-thought engine will be connected at launch, providing extended step-by-step analysis for complex queries.`,
+  `🧠 Extended reasoning active...\n\n[Query]: "{msg}"\n[Reasoning chains]: 7 activated\n[Confidence]: 94.2%\n\nPrototype Output: Deep Thinking Mode demonstrates the UI/UX of the reasoning interface. Full extended reasoning with real AI will be available in the production version of Panwar.ai.`,
+];
+
+/* ════════════════════════════════════════
+   AUTH
+════════════════════════════════════════ */
+function switchAuthTab(tab, el) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-login').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('tab-signup').style.display = tab === 'signup' ? '' : 'none';
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  if (!email || !pass) { showAuthError('Please fill in all fields.'); return; }
+  const user = USERS_DB[email];
+  if (user && user.pass === pass) {
+    loginSuccess(email, user.name, user.plan);
+  } else {
+    showAuthError('Invalid credentials. Try the demo account below.');
+  }
+}
+
+function doSignup() {
+  const name  = document.getElementById('su-name').value.trim();
+  const email = document.getElementById('su-email').value.trim();
+  const pass  = document.getElementById('su-pass').value;
+  if (!name) { showAuthError('Please enter your name.'); return; }
+  if (!email || !pass) { showAuthError('Please fill in all fields.'); return; }
+  if (pass.length < 6) { showAuthError('Password must be at least 6 characters.'); return; }
+  if (USERS_DB[email]) { showAuthError('Email already registered. Please sign in.'); return; }
+  USERS_DB[email] = { name, pass, plan: 'free' };
+  loginSuccess(email, name, 'free');
+}
+
+function quickDemo() {
+  document.getElementById('login-email').value = 'demo@panwar.ai';
+  document.getElementById('login-pass').value  = 'demo123';
+  doLogin();
+}
+
+function loginSuccess(email, name, plan) {
+  state.user = { email, name };
+  state.plan = plan;
+  state.msgCount = 0;
+  document.getElementById('auth-overlay').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  updateUserUI();
+  updatePlanUI();
+  buildActivityChart();
+  setTimeout(() => animateBars(), 400);
+  toast(`Welcome back, ${name.split(' ')[0]}! ✦`, 'success');
+}
+
+function doLogout() {
+  state = { user:null, plan:'free', messages:[], chatHistory:[], msgCount:0, deepThink:false, selectedModel:'Panwar Ultra 4.0' };
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('auth-overlay').style.display = 'flex';
+  document.getElementById('chat-messages').innerHTML = '';
+  document.getElementById('empty-state') || resetEmpty();
+}
+
+/* ════════════════════════════════════════
+   UI UPDATES
+════════════════════════════════════════ */
+function updateUserUI() {
+  const { name, email } = state.user;
+  const initials = name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('user-av').textContent = initials;
+  document.getElementById('user-name-el').textContent = name;
+  document.getElementById('user-email-el').textContent = email;
+  document.getElementById('empty-title').textContent = `Hello, ${name.split(' ')[0]}!`;
+}
+
+function updatePlanUI() {
+  const isPro = state.plan === 'pro';
+  const badge = document.getElementById('sb-plan-badge');
+  const card  = document.getElementById('plan-card');
+  const upBtn = document.getElementById('upgrade-btn');
+  const detail = document.getElementById('plan-detail');
+  const prog  = document.getElementById('plan-progress');
+
+  badge.textContent = isPro ? 'PRO' : 'BETA';
+  badge.className   = 'sb-badge' + (isPro ? ' pro' : '');
+
+  if (isPro) {
+    card.className = 'plan-card pro-card';
+    card.innerHTML = `<div class="plan-name">✦ Pro Plan</div><div class="plan-detail">Unlimited messages · Priority access</div>`;
+    upBtn.style.display = 'none';
+  } else {
+    card.className = 'plan-card';
+    const pct = Math.min(100, Math.round((state.msgCount / FREE_LIMIT) * 100));
+    detail.textContent = `${state.msgCount} / ${FREE_LIMIT} messages used`;
+    prog.style.width = pct + '%';
+    upBtn.style.display = 'flex';
+  }
+
+  // analytics
+  const sm = document.getElementById('stat-msgs');
+  if (sm) sm.textContent = state.msgCount;
+  const sc = document.getElementById('stat-chats');
+  if (sc) sc.textContent = state.chatHistory.length;
+  const sessBar = document.getElementById('sess-bar');
+  const sessVal = document.getElementById('sess-val');
+  const planBar = document.getElementById('plan-bar');
+  const planVal = document.getElementById('plan-val');
+  if (sessBar) { sessBar.style.width = Math.min(100, state.msgCount*5)+'%'; sessVal.textContent = state.msgCount; }
+  if (planBar && !isPro) { const p = Math.round((state.msgCount/FREE_LIMIT)*100); planBar.style.width=p+'%'; planVal.textContent=p+'%'; }
+  if (planBar && isPro) { planBar.style.width='100%'; planVal.textContent='∞'; }
+}
+
+function updateHistory() {
+  const list = document.getElementById('history-list');
+  list.innerHTML = '';
+  state.chatHistory.slice(0,6).forEach(chat => {
+    const el = document.createElement('div');
+    el.className = 'history-item';
+    el.innerHTML = `<div class="history-dot"></div><div class="history-text">${chat.preview}</div>`;
+    list.appendChild(el);
+  });
+}
+
+/* ════════════════════════════════════════
+   CHAT
+════════════════════════════════════════ */
+function canSend() {
+  return state.plan === 'pro' || state.msgCount < FREE_LIMIT;
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = Math.min(ta.scrollHeight, 140) + 'px';
+}
+
+function usePrompt(txt) {
+  const ta = document.getElementById('chat-input');
+  ta.value = txt;
+  ta.focus();
+  autoResize(ta);
+}
+
+function tryFeature(prompt) {
+  switchTab('chat', document.querySelector('[data-tab="chat"]'));
+  setTimeout(() => usePrompt(prompt), 100);
+}
+
+async function sendMessage() {
+  const ta = document.getElementById('chat-input');
+  const text = ta.value.trim();
+  if (!text) return;
+
+  if (!canSend()) {
+    renderWarning();
+    return;
+  }
+
+  // Hide empty state
+  const empty = document.getElementById('empty-state');
+  if (empty) empty.remove();
+  clearWarning();
+
+  ta.value = '';
+  ta.style.height = 'auto';
+
+  state.msgCount++;
+  const ts = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  state.messages.push({ role:'user', content:text, ts });
+
+  const initials = state.user.name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase();
+  appendMessage('user', text, ts, initials);
+
+  // Update header
+  if (state.messages.length === 1) {
+    const preview = text.slice(0,40) + (text.length > 40 ? '…' : '');
+    document.querySelector('.header-title').innerHTML = `<span>${preview}</span>`;
+  }
+
+  // Show typing
+  const typingEl = appendTyping();
+  scrollBottom();
+
+  // Delay
+  const delay = state.deepThink
+    ? 1800 + Math.random()*2200
+    : 900  + Math.random()*1200;
+  await sleep(delay);
+
+  typingEl.remove();
+
+  const responses = state.deepThink ? DEEP_RESPONSES : AI_RESPONSES;
+  const tmpl = responses[Math.floor(Math.random()*responses.length)];
+  const short = text.slice(0,50) + (text.length>50?'…':'');
+  const aiText = tmpl.replace('{msg}', short);
+  const aiTs = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  state.messages.push({ role:'assistant', content:aiText, ts:aiTs });
+  appendMessage('ai', aiText, aiTs, '✦');
+  scrollBottom();
+  updatePlanUI();
+  renderWarning();
+  updateHistory();
+}
+
+function appendMessage(role, text, ts, avatar) {
+  const msgs = document.getElementById('chat-messages');
+  const row = document.createElement('div');
+  row.className = `msg-row ${role}`;
+
+  const av = `<div class="msg-av ${role}">${avatar}</div>`;
+  const meta = role === 'user'
+    ? `<div class="msg-meta">You · ${ts}</div>`
+    : `<div class="msg-meta">Panwar.ai · ${ts}</div>`;
+
+  const bubbleText = escHtml(text).replace(/\n/g,'<br>');
+  row.innerHTML = `
+    ${av}
+    <div class="msg-body">
+      <div class="msg-bubble ${role}">${bubbleText}</div>
+      ${meta}
+    </div>`;
+  msgs.appendChild(row);
+  return row;
+}
+
+function appendTyping() {
+  const msgs = document.getElementById('chat-messages');
+  const row = document.createElement('div');
+  row.className = 'typing-row';
+  row.innerHTML = `
+    <div class="msg-av ai">✦</div>
+    <div class="typing-bubble">
+      <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+    </div>`;
+  msgs.appendChild(row);
+  scrollBottom();
+  return row;
+}
+
+function scrollBottom() {
+  const msgs = document.getElementById('chat-messages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function renderWarning() {
+  const area = document.getElementById('chat-warning-area');
+  area.innerHTML = '';
+  if (state.plan === 'pro') return;
+  const rem = FREE_LIMIT - state.msgCount;
+  if (rem <= 0) {
+    area.innerHTML = `<div class="chat-limit-wall">🚫 <strong>Message limit reached.</strong> <span style="cursor:pointer;text-decoration:underline" onclick="upgradePro()">Upgrade to Pro</span> for unlimited access.</div>`;
+    document.getElementById('chat-input').disabled = true;
+    document.getElementById('send-btn').disabled = true;
+    document.getElementById('input-hint').textContent = 'Upgrade to Pro to continue chatting';
+  } else if (rem <= 3) {
+    area.innerHTML = `<div class="chat-warning">⚠️ Only <strong>${rem} message${rem!==1?'s':''}</strong> remaining. <span style="cursor:pointer;text-decoration:underline" onclick="upgradePro()">Upgrade to Pro</span> for unlimited.</div>`;
+  }
+}
+
+function clearWarning() {
+  document.getElementById('chat-warning-area').innerHTML = '';
+}
+
+function newChat() {
+  if (state.messages.length > 0) {
+    state.chatHistory.unshift({
+      preview: state.messages[0].content.slice(0,40) + '…',
+      messages: [...state.messages],
+    });
+  }
+  state.messages = [];
+  state.msgCount = 0;
+  document.getElementById('chat-messages').innerHTML = '';
+
+  const empty = document.createElement('div');
+  empty.id = 'empty-state';
+  empty.className = 'empty-state';
+  empty.innerHTML = `
+    <div class="empty-icon">✦</div>
+    <div class="empty-title" id="empty-title">Hello, ${state.user.name.split(' ')[0]}!</div>
+    <div class="empty-sub">Panwar.ai is ready. Ask me anything — write code, explain concepts, generate ideas, and more.</div>
+    <div class="suggestion-grid">
+      <div class="suggestion-chip" onclick="usePrompt('Explain neural networks simply')"><span class="chip-em">🧠</span>Neural Networks</div>
+      <div class="suggestion-chip" onclick="usePrompt('Write a Python web scraper')"><span class="chip-em">🐍</span>Python Code</div>
+      <div class="suggestion-chip" onclick="usePrompt('Give me 5 unique startup ideas for 2025')"><span class="chip-em">💡</span>Startup Ideas</div>
+      <div class="suggestion-chip" onclick="usePrompt('How does GPT actually work?')"><span class="chip-em">🤖</span>How GPT Works</div>
+      <div class="suggestion-chip" onclick="usePrompt('Write a professional cold email')"><span class="chip-em">📧</span>Cold Email</div>
+      <div class="suggestion-chip" onclick="usePrompt('Explain machine learning workflow')"><span class="chip-em">⚙️</span>ML Workflow</div>
+    </div>`;
+  document.getElementById('chat-messages').appendChild(empty);
+
+  document.querySelector('.header-title').innerHTML = '<span>New Conversation</span>';
+  document.getElementById('chat-input').disabled = false;
+  document.getElementById('send-btn').disabled = false;
+  document.getElementById('input-hint').textContent = 'Press Enter to send · Shift+Enter for new line · Prototype — AI responses simulated';
+  clearWarning();
+  updatePlanUI();
+  updateHistory();
+}
+
+/* ════════════════════════════════════════
+   TABS
+════════════════════════════════════════ */
+function switchTab(name, el) {
+  document.querySelectorAll('.sb-nav-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if (name === 'analytics') { updatePlanUI(); setTimeout(animateBars, 100); }
+}
+
+/* ════════════════════════════════════════
+   PLAN
+════════════════════════════════════════ */
+function upgradePro() {
+  state.plan = 'pro';
+  USERS_DB[state.user.email].plan = 'pro';
+  document.getElementById('chat-input').disabled = false;
+  document.getElementById('send-btn').disabled = false;
+  document.getElementById('input-hint').textContent = 'Press Enter to send · Shift+Enter for new line · Pro — Unlimited messages';
+  clearWarning();
+  updatePlanUI();
+  toast('🎉 You\'re now on Pro! Unlimited messages activated.','success');
+}
+
+/* ════════════════════════════════════════
+   DEEP THINK
+════════════════════════════════════════ */
+function toggleDeepThink() {
+  state.deepThink = !state.deepThink;
+  const btn = document.getElementById('deep-toggle');
+  btn.classList.toggle('on', state.deepThink);
+  const hint = document.getElementById('input-hint');
+  hint.textContent = state.deepThink
+    ? '🧠 Deep Thinking Mode ON · Extended reasoning simulation enabled'
+    : 'Press Enter to send · Shift+Enter for new line · Prototype — AI responses simulated';
+  toast(state.deepThink ? '🧠 Deep Thinking Mode ON' : 'Deep Thinking Mode OFF', 'success');
+}
+
+/* ════════════════════════════════════════
+   SETTINGS ACTIONS
+════════════════════════════════════════ */
+function selectModel(card) {
+  document.querySelectorAll('.model-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  const name = card.querySelector('.model-name').textContent;
+  state.selectedModel = name;
+  document.getElementById('active-model-name').textContent = name;
+  toast(`Model switched to ${name}`, 'success');
+}
+
+function clearHistory() {
+  if (confirm('Clear all chat history? This cannot be undone.')) {
+    state.chatHistory = [];
+    state.messages = [];
+    updateHistory();
+    toast('History cleared', 'success');
+  }
+}
+
+function exportChat() {
+  if (!state.messages.length && !state.chatHistory.length) { toast('No conversations to export yet', 'error'); return; }
+  let lines = [`Panwar.ai Chat Export — ${new Date().toLocaleString()}`, '='.repeat(50)];
+  state.messages.forEach(m => {
+    lines.push(`\n[${m.ts}] ${m.role === 'user' ? 'You' : 'Panwar.ai'}:\n${m.content}`);
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `panwar_chat_${Date.now()}.txt`;
+  a.click();
+  toast('Chat exported successfully!', 'success');
+}
+
+/* ════════════════════════════════════════
+   ANALYTICS CHARTS
+════════════════════════════════════════ */
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const HEIGHTS = [35,55,45,70,60,30,50];
+
+function buildActivityChart() {
+  const barsEl = document.getElementById('activity-bars');
+  const labsEl = document.getElementById('activity-labels');
+  if (!barsEl) return;
+  barsEl.innerHTML = ''; labsEl.innerHTML = '';
+  DAYS.forEach((d,i) => {
+    const bar = document.createElement('div');
+    bar.className = 'a-bar';
+    bar.style.width = '100%';
+    bar.style.height = '4px';
+    bar.dataset.h = HEIGHTS[i];
+    barsEl.appendChild(bar);
+    const lbl = document.createElement('div');
+    lbl.className = 'a-bar-label';
+    lbl.style.flex = '1';
+    lbl.textContent = d;
+    labsEl.appendChild(lbl);
+  });
+}
+
+function animateBars() {
+  document.querySelectorAll('[data-w]').forEach(el => { el.style.width = el.dataset.w; });
+  document.querySelectorAll('.a-bar[data-h]').forEach(el => { el.style.height = el.dataset.h + 'px'; });
+}
+
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
+function toast(msg, type='') {
+  const area = document.getElementById('toast-area');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  area.appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+/* ════════════════════════════════════════
+   UTILS
+════════════════════════════════════════ */
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
